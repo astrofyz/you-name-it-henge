@@ -24,8 +24,7 @@ warnings.filterwarnings('ignore')
 
 # Page configuration
 st.set_page_config(
-    page_title="Paris Street Sunset Finder",
-    page_icon="🗼",
+    page_title="Sunset Finder",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -33,12 +32,17 @@ st.set_page_config(
 # Custom CSS for better styling
 st.markdown("""
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Beth+Ellen:wght@400&display=swap');
+    
     .main-header {
-        font-size: 1rem;
-        color: #1f77b4;
+        font-size: 3rem;
+        color: #eb3446;
+        font-family: 'Beth Ellen', cursive;
+        font-weight: 300;
         text-align: center;
         margin-bottom: 0.2rem;
-        margin-top: 0.1rem;
+        margin-top: -0.1rem;
+        text-shadow: 0 0 1px rgba(55, 52, 235, 0.3);
     }
     .date-info {
         background-color: #f0f2f6;
@@ -70,51 +74,15 @@ def load_paris_data():
     geopandas.GeoDataFrame : Paris street data with geometry
     """
     try:
-        # Try to load from URL (replace with your actual URL)
-        paris_data_url = "https://raw.githubusercontent.com/yourusername/hedge/main/data/paris_streets.csv"
+        # Load from URL
+        paris_data_url = "https://raw.githubusercontent.com/astrofyz/you-name-it-henge/refs/heads/main/processed_Paris_roads.csv"
         
-        # For now, create sample Paris data
-        sample_data = {
-            'Route_Name': [
-                'Champs-Élysées',
-                'Rue de Rivoli', 
-                'Avenue des Champs-Élysées',
-                'Boulevard Saint-Germain',
-                'Rue de la Paix',
-                'Avenue Montaigne',
-                'Rue du Faubourg Saint-Honoré',
-                'Boulevard Haussmann',
-                'Rue de Sèvres',
-                'Avenue Victor Hugo'
-            ],
-            'geometry': [
-                'LINESTRING(2.3080 48.8738, 2.3090 48.8748)',
-                'LINESTRING(2.3320 48.8588, 2.3330 48.8598)',
-                'LINESTRING(2.3080 48.8738, 2.3090 48.8748)',
-                'LINESTRING(2.3320 48.8588, 2.3330 48.8598)',
-                'LINESTRING(2.3320 48.8688, 2.3330 48.8698)',
-                'LINESTRING(2.3080 48.8638, 2.3090 48.8648)',
-                'LINESTRING(2.3220 48.8688, 2.3230 48.8698)',
-                'LINESTRING(2.3320 48.8738, 2.3330 48.8748)',
-                'LINESTRING(2.3180 48.8488, 2.3190 48.8498)',
-                'LINESTRING(2.2880 48.8638, 2.2890 48.8648)'
-            ],
-            'henge_time': [
-                "['2024-06-21T21:30:00', '2024-12-21T16:45:00']",
-                "['2024-06-21T21:30:00', '2024-12-21T16:45:00']",
-                "['2024-06-21T21:30:00']",
-                "['2024-12-21T16:45:00']",
-                "['2024-06-21T21:30:00', '2024-12-21T16:45:00']",
-                "['2024-06-21T21:30:00']",
-                "['2024-12-21T16:45:00']",
-                "['2024-06-21T21:30:00', '2024-12-21T16:45:00']",
-                "['2024-06-21T21:30:00']",
-                "['2024-12-21T16:45:00']"
-            ],
-            'azimuth': [300.5, 310.2, 295.8, 320.1, 305.7, 290.3, 315.9, 300.1, 285.6, 325.4]
-        }
+        # Download the CSV file from URL
+        response = requests.get(paris_data_url)
+        response.raise_for_status()  # Raise an exception for bad status codes
         
-        df = pd.DataFrame(sample_data)
+        # Read the CSV content
+        df = pd.read_csv(io.StringIO(response.text))
         
         # Convert geometry strings to Shapely objects
         df['geometry'] = df['geometry'].apply(wkt.loads)
@@ -370,7 +338,7 @@ def main():
     """Main Streamlit application."""
     
     # Header
-    st.markdown('<h1 class="main-header">🗼 Paris Street Sunset Finder</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="main-header">Some-street-name-henge</h1>', unsafe_allow_html=True)
     
     # Sidebar for file uploads and configuration
     with st.sidebar:
@@ -405,7 +373,7 @@ def main():
         col1, col2 = st.columns([3, 1])
         
         with col1:
-            st.subheader("🗺️ Interactive Map")
+            # st.subheader("🗺️ Interactive Map")
             
             # Date selection
             selected_date = st.date_input(
@@ -421,7 +389,7 @@ def main():
             st.plotly_chart(map_obj, use_container_width=True)
         
         with col2:
-            st.subheader("📅 Date Information")
+            # st.subheader("📅 Date")
             
             if selected_date:
                 # Find highlighted streets for this date
